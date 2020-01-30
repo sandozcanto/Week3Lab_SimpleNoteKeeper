@@ -14,8 +14,7 @@
     <body>
         <h1>Simple Note Keeper</h1>
         <h2>Edit Note</h1>
-        <form method="POST">
-        <form method="POST" action="/Week03Lab_SimpleNoteKeeper/note">
+        <form method="POST" action="note">
         Title: <input type="text" name="title" /><br />
         Contents: <textarea name="contents"></textarea><br />
         <input type="submit" value="Save" />

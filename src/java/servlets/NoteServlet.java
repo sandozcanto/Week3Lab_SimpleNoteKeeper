@@ -5,6 +5,12 @@
  */
 package servlets;
 
+import domain.Note;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -29,7 +35,7 @@ public class NoteServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -44,16 +50,34 @@ public class NoteServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         response.setContentType("text/html;charset=UTF-8");
         System.out.println("GET Request:");
+
+        
+        
+        String path = getServletContext().getRealPath("/WEB-INF/note.txt");
+        
+        // to read files
+        BufferedReader br = new BufferedReader(new FileReader(new File(path)));
+        String Line1 = br.readLine();
+        String Line2 = br.readLine();
+        
+        System.out.println(Line1);
+        System.out.println(Line2);
+        
+        Note note = new Note(Line1, Line2);
+        request.setAttribute("note", note);
+        
         String edit = request.getParameter("edit");
+        
+
         if (edit != null) {
             System.out.println("Edit Mode");
-            getServletContext().getRequestDispatcher("/WEB-INF/editnote.jsp").forward(request,response);
+            getServletContext().getRequestDispatcher("/WEB-INF/editnote.jsp").forward(request, response);
         } else {
             System.out.println("View Mode");
-            getServletContext().getRequestDispatcher("/WEB-INF/viewnote.jsp").forward(request,response);
+            getServletContext().getRequestDispatcher("/WEB-INF/viewnote.jsp").forward(request, response);
         }
     }
 
@@ -68,16 +92,32 @@ public class NoteServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         response.setContentType("text/html;charset=UTF-8");
         System.out.println("POST Request:");
         String edit = request.getParameter("edit");
         String title = request.getParameter("title");
         String contents = request.getParameter("contents");
-        if (edit != null) { System.out.println("Edit is set!"); }
-        System.out.println("Title: "+title);
-        System.out.println("Contents: "+contents);
-        getServletContext().getRequestDispatcher("/WEB-INF/viewnote.jsp").forward(request,response);
+        
+        String path = getServletContext().getRealPath("/WEB-INF/note.txt");
+        
+        Note note = new Note(title, contents);
+
+        request.setAttribute("note", note);
+
+        // to write to a file
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(path, false)));
+        pw.println(note.getTitle());
+        pw.println(note.getContents());
+        pw.close();
+        
+        
+        if (edit != null) {
+            System.out.println("Edit is set!");
+        }
+        System.out.println("Title: " + title);
+        System.out.println("Contents: " + contents);
+        getServletContext().getRequestDispatcher("/WEB-INF/viewnote.jsp").forward(request, response);
     }
 
     /**
